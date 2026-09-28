@@ -1,0 +1,62 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never run two deploys at the same time
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  APP_DIR: /home/${{ secrets.SSH_USER }}/node-app
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/ec2.pem
+          chmod 600 ~/.ssh/ec2.pem
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Copy project files to EC2
+        run: |
+          ssh -i ~/.ssh/ec2.pem ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "mkdir -p $APP_DIR"
+          rsync -az --delete \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude 'node_modules' \
+            -e "ssh -i ~/.ssh/ec2.pem" \
+            ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:$APP_DIR/
+
+      - name: Build and restart container
+        run: |
+          ssh -i ~/.ssh/ec2.pem ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            set -e
+            cd $APP_DIR
+            docker compose up -d --build --remove-orphans
+            docker image prune -f
+          "
+
+      - name: Health check
+        run: |
+          for i in $(seq 1 10); do
+            if curl -fsS "http://${{ secrets.SSH_HOST }}:8080"; then
+              echo; echo "App is up"
+              exit 0
+            fi
+            echo "Waiting for app... ($i/10)"
+            sleep 3
+          done
+          echo "App did not respond on port 8080"
+          exit 1

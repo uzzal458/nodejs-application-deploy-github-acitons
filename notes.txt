@@ -21,3 +21,27 @@ git add .
 git commit -m "Initial commit"
 git remote add origin git@github.com:uzzal458/nodejs-application-deploy-github-acitons.git
 git push -u origin main
+
+Create AWS EC2:
+---------------
+chmod 400 uzzal-server.pem
+ssh -i uzzal-server.pem ubuntu@18.209.56.208
+sudo apt-get update
+sudo apt-get upgrade
+
+Docker install in EC2 Machine:
+-------------------------------
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+Executing docker install script, commit: 7cae5f8b0decc17d6571f9f52eb840fbc13b2737
+<...>
+
+sudo usermod -aG docker ubuntu
+newgrp docker
+docker ps
+
+docker compose up -d
+docker compose up -d --build
+
+ssh-keygen -t rsa -b 4096 -C "uzzal@shomvob.com.dev"
+projectLocation: /home/uzzal/Downloads/practice-codes/node-app-deploy-gh-actions/private
