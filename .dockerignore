@@ -8,3 +8,7 @@ Dockerfile
 compose.yaml
 .env*
 *.md
+*.pem
+private
+private.pub
+id_rsa*

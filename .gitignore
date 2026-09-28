@@ -147,3 +147,9 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# SSH keys
+*.pem
+private
+private.pub
+id_rsa*
