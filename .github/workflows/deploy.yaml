@@ -22,6 +22,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Check SSH secrets
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          # Short hashes let you compare values without revealing them
+          echo "SSH_USER length=${#SSH_USER} hash=$(printf '%s' "$SSH_USER" | sha256sum | cut -c1-12)  (ubuntu = 7804a56a5c76)"
+          echo "SSH_HOST length=${#SSH_HOST} hash=$(printf '%s' "$SSH_HOST" | sha256sum | cut -c1-12)  (18.209.56.208 = f8fcb7686150)"
+
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
