@@ -1,0 +1,23 @@
+docker build -t node-app .
+docker run -p 8080:8080 node-app
+
+docker run -it --rm -p 8080:8080 node-app
+
+curl http://localhost:8080
+
+docker compose up -d
+
+if not working
+
+docker compose up -d --force-recreate
+
+docker compose down
+
+Github actions:
+------------------
+npx gitignore Node
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin git@github.com:uzzal458/nodejs-application-deploy-github-acitons.git
+git push -u origin main
