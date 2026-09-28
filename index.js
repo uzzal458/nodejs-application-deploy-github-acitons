@@ -1,12 +1,12 @@
-import express from 'express'
+import express from "express";
 
-const app = express()
-const PORT = process.env.PORT ?? 8080
+const app = express();
+const PORT = process.env.PORT ?? 8080;
 
-app.get('/', (req, res) => {
-    return res.json({msg: "Hello from the server V3"})
-})
+app.get("/", (req, res) => {
+  return res.json({ msg: "Hello from the server" });
+});
 
 app.listen(PORT, () => {
-    console.log(`Server is running on ${PORT}`)
-})
+  console.log(`Server is running on ${PORT}`);
+});
