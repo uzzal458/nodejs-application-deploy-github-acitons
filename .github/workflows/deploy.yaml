@@ -25,9 +25,15 @@ jobs:
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/ec2.pem
+          printf '%s\n' "${{ secrets.SSH_KEY }}" | tr -d '\r' > ~/.ssh/ec2.pem
           chmod 600 ~/.ssh/ec2.pem
+          # Fails early if SSH_KEY is not a valid private key; prints its public fingerprint
+          ssh-keygen -y -f ~/.ssh/ec2.pem > /dev/null
+          ssh-keygen -lf ~/.ssh/ec2.pem
           ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+          # Only use this key, and fail instead of prompting
+          printf 'Host *\n  IdentityFile ~/.ssh/ec2.pem\n  IdentitiesOnly yes\n  BatchMode yes\n' > ~/.ssh/config
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "echo SSH connection OK"
 
       - name: Copy project files to EC2
         run: |

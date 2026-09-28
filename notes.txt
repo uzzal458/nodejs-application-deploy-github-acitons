@@ -45,3 +45,7 @@ docker compose up -d --build
 
 ssh-keygen -t rsa -b 4096 -C "uzzal@shomvob.com.dev"
 projectLocation: /home/uzzal/Downloads/practice-codes/node-app-deploy-gh-actions/private
+
+
+ cat ~/.ssh/gh-actions-ec2.pub | ssh -i ~/pems/uzzal-server.pem ubuntu@18.209.56.208 "cat >> ~/.ssh/authorized_keys"
+ ssh -i ~/.ssh/gh-actions-ec2 ubuntu@18.209.56.208 "echo ok"
